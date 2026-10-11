@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>ようこそ</title>
+<style>
+@font-face{
+  font-family:"MaruMinya";
+  src: url(sozai/fonts/x12y12pxMaruMinya.ttf) format("truetype");
+  font-display:swap;
+}
+:root{
+  color-scheme:light;
+  --bg:#dcede1;
+  --ink:#1c231e;
+  --line:#607363;
+  --paper:#fbfcfa;
+  --hover:#eaf3ec;
+  --font:"MaruMinya","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  --hop-time:.1s;
+  --swap-time:.7s;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%;background:var(--bg);transition:background-color var(--swap-time) ease}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0;height:100%;background:var(--bg);color:var(--ink);
+  font-family:var(--font);
+  -webkit-tap-highlight-color:transparent;
+  overflow:hidden;
+  transition:background-color var(--swap-time) ease;
+}
+main{height:100%;display:grid;place-items:center}
+
+.stage{
+  --w:min(69vw,336px,51svh);
+  position:relative;
+  width:var(--w);
+}
+
+/* 絵（2枚を重ねて、ふわっと入れ替える） */
+.me{all:unset;display:block;cursor:pointer;width:100%}
+.me:focus-visible{outline:3px dashed var(--line);outline-offset:8px}
+.sprites{display:block;position:relative;aspect-ratio:28 / 31}
+.s{
+  display:block;width:100%;height:auto;
+  image-rendering:pixelated;image-rendering:crisp-edges;
+  -webkit-user-drag:none;user-select:none;
+  transition:opacity var(--swap-time) ease;
+}
+.s1{position:absolute;inset:0;opacity:0}
+.stage.is-vrc .s0{opacity:0}
+.stage.is-vrc .s1{opacity:1}
+/* 押した瞬間のぴょん：ドットに縛られず、なめらかに一瞬だけ */
+.sprites.hop{animation:hop var(--hop-time) linear}
+@keyframes hop{
+  0%  {transform:translateY(0);animation-timing-function:ease-out}
+  50% {transform:translateY(calc(var(--w) * -.032));animation-timing-function:ease-in}
+  100%{transform:translateY(0)}
+}
+
+/* まわりに浮かぶもの */
+.node{
+  position:absolute;left:50%;top:50%;
+  display:flex;justify-content:center;width:max-content;
+  transform:translate(-50%,-50%) translate(var(--dx,0px),var(--dy,0px)) scale(.3);
+  opacity:0;visibility:hidden;
+  transition:
+    transform .35s cubic-bezier(.4,0,.8,.6),
+    opacity .25s ease-out,
+    visibility 0s linear .35s;
+}
+.node.show{
+  transform:translate(-50%,-50%);
+  opacity:1;visibility:visible;
+  transition:
+    transform .7s cubic-bezier(.16,.9,.3,1) calc(var(--i) * 90ms),
+    opacity .6s ease-out calc(var(--i) * 90ms),
+    visibility 0s;
+}
+.chip{
+  /* ドット風の角：--p が「ドット1つぶん」の大きさ（枠線の太さも同じ） */
+  --p:4px;
+  position:relative;isolation:isolate;
+  display:inline-flex;align-items:center;justify-content:center;
+  margin:0;padding:calc(.4rem + var(--p)) calc(1rem + var(--p));
+  border:0;background:var(--line);color:var(--ink);
+  clip-path:polygon(0 calc(var(--p)*3),calc(var(--p)*1) calc(var(--p)*3),calc(var(--p)*1) calc(var(--p)*2),calc(var(--p)*2) calc(var(--p)*2),calc(var(--p)*2) calc(var(--p)*1),calc(var(--p)*3) calc(var(--p)*1),calc(var(--p)*3) 0,calc(100% - var(--p)*3) 0,calc(100% - var(--p)*3) calc(var(--p)*1),calc(100% - var(--p)*2) calc(var(--p)*1),calc(100% - var(--p)*2) calc(var(--p)*2),calc(100% - var(--p)*1) calc(var(--p)*2),calc(100% - var(--p)*1) calc(var(--p)*3),100% calc(var(--p)*3),100% calc(100% - var(--p)*3),calc(100% - var(--p)*1) calc(100% - var(--p)*3),calc(100% - var(--p)*1) calc(100% - var(--p)*2),calc(100% - var(--p)*2) calc(100% - var(--p)*2),calc(100% - var(--p)*2) calc(100% - var(--p)*1),calc(100% - var(--p)*3) calc(100% - var(--p)*1),calc(100% - var(--p)*3) 100%,calc(var(--p)*3) 100%,calc(var(--p)*3) calc(100% - var(--p)*1),calc(var(--p)*2) calc(100% - var(--p)*1),calc(var(--p)*2) calc(100% - var(--p)*2),calc(var(--p)*1) calc(100% - var(--p)*2),calc(var(--p)*1) calc(100% - var(--p)*3),0 calc(100% - var(--p)*3));
+  font:inherit;font-size:26px;line-height:1.15;text-decoration:none;white-space:nowrap;
+  cursor:pointer;
+  transition:background-color .15s ease;
+}
+.chip::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:var(--paper);
+  clip-path:polygon(calc(var(--p)*1) calc(var(--p)*3),calc(var(--p)*2) calc(var(--p)*3),calc(var(--p)*2) calc(var(--p)*2),calc(var(--p)*3) calc(var(--p)*2),calc(var(--p)*3) calc(var(--p)*1),calc(100% - var(--p)*3) calc(var(--p)*1),calc(100% - var(--p)*3) calc(var(--p)*2),calc(100% - var(--p)*2) calc(var(--p)*2),calc(100% - var(--p)*2) calc(var(--p)*3),calc(100% - var(--p)*1) calc(var(--p)*3),calc(100% - var(--p)*1) calc(100% - var(--p)*3),calc(100% - var(--p)*2) calc(100% - var(--p)*3),calc(100% - var(--p)*2) calc(100% - var(--p)*2),calc(100% - var(--p)*3) calc(100% - var(--p)*2),calc(100% - var(--p)*3) calc(100% - var(--p)*1),calc(var(--p)*3) calc(100% - var(--p)*1),calc(var(--p)*3) calc(100% - var(--p)*2),calc(var(--p)*2) calc(100% - var(--p)*2),calc(var(--p)*2) calc(100% - var(--p)*3),calc(var(--p)*1) calc(100% - var(--p)*3));
+  transition:background-color .15s ease;
+}
+.node.show .chip:hover,.node.show .chip:focus-visible{background:var(--ink)}
+.node.show .chip:hover::before,.node.show .chip:focus-visible::before{background:var(--hover)}
+.chip:focus-visible{outline:none;text-decoration:underline;text-underline-offset:5px}
+.chip .plus{color:var(--line);margin-left:.35em}
+.chip.back{color:var(--line)}
+
+/* ボタンの横のひとこと（押せない） */
+.pair{display:flex;flex-direction:column;align-items:center;gap:.4rem}
+.msg{
+  --p:2px;
+  position:relative;isolation:isolate;
+  display:block;max-width:16em;padding:calc(.4rem + var(--p)) calc(.95rem + var(--p));
+  background:var(--line);
+  clip-path:polygon(0 calc(var(--p)*2),calc(var(--p)*1) calc(var(--p)*2),calc(var(--p)*1) calc(var(--p)*1),calc(var(--p)*2) calc(var(--p)*1),calc(var(--p)*2) 0,calc(100% - var(--p)*2) 0,calc(100% - var(--p)*2) calc(var(--p)*1),calc(100% - var(--p)*1) calc(var(--p)*1),calc(100% - var(--p)*1) calc(var(--p)*2),100% calc(var(--p)*2),100% calc(100% - var(--p)*2),calc(100% - var(--p)*1) calc(100% - var(--p)*2),calc(100% - var(--p)*1) calc(100% - var(--p)*1),calc(100% - var(--p)*2) calc(100% - var(--p)*1),calc(100% - var(--p)*2) 100%,calc(var(--p)*2) 100%,calc(var(--p)*2) calc(100% - var(--p)*1),calc(var(--p)*1) calc(100% - var(--p)*1),calc(var(--p)*1) calc(100% - var(--p)*2),0 calc(100% - var(--p)*2));
+  color:var(--line);font-size:16px;line-height:1.3;text-align:center;
+  user-select:none;
+}
+.msg::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:var(--paper);
+  clip-path:polygon(calc(var(--p)*1) calc(var(--p)*2),calc(var(--p)*2) calc(var(--p)*2),calc(var(--p)*2) calc(var(--p)*1),calc(100% - var(--p)*2) calc(var(--p)*1),calc(100% - var(--p)*2) calc(var(--p)*2),calc(100% - var(--p)*1) calc(var(--p)*2),calc(100% - var(--p)*1) calc(100% - var(--p)*2),calc(100% - var(--p)*2) calc(100% - var(--p)*2),calc(100% - var(--p)*2) calc(100% - var(--p)*1),calc(var(--p)*2) calc(100% - var(--p)*1),calc(var(--p)*2) calc(100% - var(--p)*2),calc(var(--p)*1) calc(100% - var(--p)*2));
+}
+@supports (background:color-mix(in srgb,red,blue)){
+  .msg{background:color-mix(in srgb,var(--line) 55%,var(--paper))}
+}
+@media (min-width:640px){
+  .pair{flex-direction:row;gap:.6rem}
+  .msg{max-width:none;white-space:nowrap}
+}
+@media (max-width: 767px) {
+  .chip{font-size:24px}
+}
+
+footer{
+  position:fixed;left:0;right:0;bottom:0;
+  padding:0 1rem calc(.9rem + env(safe-area-inset-bottom,0px));
+  text-align:center;font-size:16px;color:var(--line);
+  transition:color var(--swap-time) ease;
+}
+.sr-only{
+  position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0;
+}
+@media (prefers-reduced-motion:reduce){
+  .sprites.hop{animation:none}
+  .node,.node.show,.s,html,body,footer{transition:none}
+}
+</style>
+</head>
+<body>
+<main>
+  <div class="stage" id="stage">
+    <button class="me" id="me" type="button" aria-expanded="false" aria-label="絵をタップするとリンクが出ます">
+      <span class="sprites" id="sprites">
+        <img class="s s0" id="s0" alt="黒髪のドット絵のキャラクター" width="28" height="31" draggable="false"
+             src="sozai/images/eee.png">
+        <img class="s s1" id="s1" alt="" width="28" height="31" draggable="false"
+             src="sozai/images/eee_vrc.png">
+      </span>
+    </button>
+  </div>
+</main>
+
+<nav class="sr-only" aria-label="リンク" id="plain"></nav>
+<footer>&copy; <span id="year"></span><span id="owner"></span></footer>
+
+<script>
+/* ============ ここを書き換えてね ============
+   url         → そのままリンク
+   items       → 押すと中身が出てくる（ボタンの次にボタン）
+   msg         → ボタンの横に出るひとこと
+   goto        → 別のモードに切り替える
+============================================= */
+const BOOTH = "https://booth.pm/wish_list_names/8GQTEB5n";
+
+const MODES = {
+  normal: {
+    theme: { bg:"#dcede1", ink:"#1c231e", line:"#607363", paper:"#fbfcfa", hover:"#eaf3ec" },
+    sprite: 0,
+    items: [
+      { label: "Mail",    url: "mailto:info@tsumiki.app" },
+      { label: "X",       url: "https://x.com/KokyuJene" },
+      { label: "Discord", url: "https://discord.com/users/1375710396123451503" },
+      { label: "YouTube", items: [
+          { label: "@super-hiko14", url: "https://www.youtube.com/@super-hiko14" },
+          { label: "@KokyuJene",    url: "https://www.youtube.com/@KokyuJene" },
+      ]},
+      { label: "見ちゃう?", items: [
+          { label: "ツミキapp", url: "https://tsumiki.app/",         msg: "使ってくれたら喜びます" },
+          { label: "ofuse",     url: "https://ofuse.me/superhiko14/", msg: "お手紙やご支援喜びます" },
+      ]},
+      { label: "VRChat ›", goto: "vrc" },
+    ],
+  },
+  vrc: {
+    theme: { bg:"#c6b5b2", ink:"#2e2524", line:"#5f504e", paper:"#f7f1ef", hover:"#efe4e1" },
+    sprite: 1,
+    items: [
+      { label: "VRChat", url: "https://vrchat.com/home/user/usr_bfd025c8-1383-4436-92cf-f3066255a45e" },
+      { label: "X",      url: "https://x.com/hiko14_vrc_" },
+      { label: "見ちゃう?", items: [
+          { label: "Booth", url: BOOTH, msg: "よかったらぁ..." },
+      ]},
+      { label: "‹ 戻る", goto: "normal", back: true },
+    ],
+  },
+};
+const BACK_LABEL = "‹ もどる";
+const COPYRIGHT_NAME = "Super Hiko14";
+/* ============================================ */
+
+const stage = document.getElementById("stage");
+const me = document.getElementById("me");
+const sprites = document.getElementById("sprites");
+const plain = document.getElementById("plain");
+const rootEl = document.documentElement;
+document.getElementById("year").textContent = new Date().getFullYear();
+document.getElementById("owner").textContent = " " + COPYRIGHT_NAME;
+
+/* ---------- DOM を作る ---------- */
+const isExternal = u => !u.startsWith("mailto:");
+function linkChip(it){
+  const a = document.createElement("a");
+  a.className = "chip"; a.href = it.url; a.textContent = it.label;
+  if (isExternal(it.url)) { a.target = "_blank"; a.rel = "noopener noreferrer"; }
+  return a;
+}
+function buttonChip(label, plus){
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "chip"; b.textContent = label;
+  if (plus) {
+    const p = document.createElement("span");
+    p.className = "plus"; p.textContent = "+"; p.setAttribute("aria-hidden","true");
+    b.appendChild(p); b.setAttribute("aria-haspopup","true");
+  }
+  return b;
+}
+function node(content){
+  const n = document.createElement("div");
+  n.className = "node"; n.appendChild(content); stage.appendChild(n);
+  return n;
+}
+function linkNode(it){
+  if (!it.msg) return node(linkChip(it));
+  const pair = document.createElement("div"); pair.className = "pair";
+  const m = document.createElement("span"); m.className = "msg"; m.textContent = it.msg;
+  pair.append(linkChip(it), m);
+  return node(pair);
+}
+
+const built = {};   // モードごとの { root, groups: Map(node → children), groupBack }
+const allNodes = [];
+for (const [key, mode] of Object.entries(MODES)) {
+  const b = built[key] = { root: [], groups: new Map(), groupBack: null };
+  mode.items.forEach(it => {
+    let n;
+    if (it.items) {
+      const btn = buttonChip(it.label, true);
+      n = node(btn);
+      b.groups.set(n, it.items.map(linkNode));
+      btn.addEventListener("click", e => { e.stopPropagation(); if (!busy) { state.group = n; render(); } });
+    } else if (it.goto) {
+      const btn = buttonChip(it.label, false);
+      if (it.back) btn.classList.add("back");
+      n = node(btn);
+      btn.addEventListener("click", e => { e.stopPropagation(); switchMode(it.goto); });
+    } else {
+      n = linkNode(it);
+    }
+    b.root.push(n);
+  });
+  if (b.groups.size) {
+    const bb = buttonChip(BACK_LABEL, false); bb.classList.add("back");
+    b.groupBack = node(bb);
+    bb.addEventListener("click", e => { e.stopPropagation(); if (!busy) { state.group = null; render(); } });
+  }
+  allNodes.push(...b.root, ...[...b.groups.values()].flat(), ...(b.groupBack ? [b.groupBack] : []));
+
+  // 検索・読み上げ用（見えない）
+  const flat = (items) => items.forEach(it => {
+    if (it.items) flat(it.items);
+    else if (it.url) { const a = document.createElement("a"); a.href = it.url; a.textContent = it.label; a.tabIndex = -1; plain.appendChild(a); }
+  });
+  flat(mode.items);
+}
+
+/* ---------- 状態 ---------- */
+const state = { mode: "normal", open: false, group: null };
+let busy = false;
+
+function visibleSet(){
+  if (!state.open) return [];
+  const b = built[state.mode];
+  return state.group ? [...b.groups.get(state.group), b.groupBack] : b.root;
+}
+
+/* ---------- 絵のまわりの楕円に並べる（はみ出さないよう調整） ---------- */
+const WOBBLE = [1.0, 1.1, 0.98, 1.08, 1.04, 0.96];
+function place(set){
+  const r = me.getBoundingClientRect();
+  const cx = r.left + r.width/2, cy = r.top + r.height/2;
+  const rx = r.width * 0.57, ry = r.height * 0.6;
+  const n = set.length, M = 10, bottomSafe = 36;
+  set.forEach((c, i) => {
+    const step = 360 / n;
+    const off = (n === 3 || n === 6 || n === 8) ? 0 : 0.5;       // 3・6個のときは真上にも置く
+    const a = (-90 + (i + off) * step) * Math.PI / 180;
+    const k = WOBBLE[i % WOBBLE.length];
+    const hw = c.offsetWidth/2, hh = c.offsetHeight/2;
+    const pair = c.querySelector('.pair') ? 1 : 0;
+    let tx = cx + Math.cos(a) * (rx * k + hw * (0.9 + pair * 0.3));
+    let ty = cy + Math.sin(a) * (ry * (k + pair * 0.14) + hh * (0.6 + pair * 0.5));
+    tx = Math.min(Math.max(tx, hw + M), innerWidth - hw - M);
+    ty = Math.min(Math.max(ty, hh + M), innerHeight - hh - M - bottomSafe);
+    c.style.left = (tx - r.left) + "px";
+    c.style.top  = (ty - r.top) + "px";
+    c.style.setProperty("--dx", (cx - tx) + "px");
+    c.style.setProperty("--dy", (cy - ty) + "px");
+    c.style.setProperty("--i", i);
+  });
+}
+function show(set){
+  place(set);
+  allNodes.forEach(c => c.classList.toggle("show", set.includes(c)));
+  me.setAttribute("aria-expanded", String(state.open));
+}
+const render = () => show(visibleSet());
+
+/* ---------- 絵を押したとき ---------- */
+function hop(){
+  sprites.classList.remove("hop"); void sprites.offsetWidth; sprites.classList.add("hop");
+}
+function back(){
+  if (busy || !state.open) return;
+  if (state.group) state.group = null; else state.open = false;
+  render();
+}
+me.addEventListener("click", e => {
+  e.stopPropagation();
+  if (busy) return;
+  hop();
+  if (!state.open) { state.open = true; state.group = null; render(); } else back();
+});
+document.addEventListener("click", e => {
+  if (busy || !state.open || e.target.closest(".node")) return;
+  state.open = false; state.group = null; render();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") back(); });
+addEventListener("resize", () => place(visibleSet()));
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => place(visibleSet()));
+
+/* ---------- モードの切り替え（背景・絵・ボタンが全部かわる） ---------- */
+function applyTheme(key){
+  const m = MODES[key], t = m.theme;
+  rootEl.style.setProperty("--bg", t.bg);
+  rootEl.style.setProperty("--ink", t.ink);
+  rootEl.style.setProperty("--line", t.line);
+  rootEl.style.setProperty("--paper", t.paper);
+  rootEl.style.setProperty("--hover", t.hover);
+  stage.classList.toggle("is-vrc", m.sprite === 1);
+  document.getElementById("s0").alt = m.sprite === 0 ? "黒髪のドット絵のキャラクター" : "";
+  document.getElementById("s1").alt = m.sprite === 1 ? "ピンクがかった髪のドット絵のキャラクター（VRChat）" : "";
+}
+function switchMode(key){
+  if (busy || key === state.mode) return;
+  busy = true;
+  state.group = null;
+  show([]);                                   // いまのボタンを絵の中へ
+  setTimeout(() => {
+    state.mode = key; applyTheme(key); hop();  // 背景と絵がかわる
+    setTimeout(() => {
+      state.open = true; render();            // あたらしいボタンがぽんっと出る
+      busy = false;
+    }, 450);
+  }, 380);
+}
+</script>
+</body>
+</html>
