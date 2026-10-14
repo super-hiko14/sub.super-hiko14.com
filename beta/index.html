@@ -42,7 +42,7 @@ main{height:100%;display:grid;place-items:center}
   width:var(--w);
 }
 
-/* 絵（2枚を重ねて、ふわっと入れ替える） */
+/* 絵(2枚を重ねて、ふわっと入れ替える) */
 .me{all:unset;display:block;cursor:pointer;width:100%}
 .me:focus-visible{outline:3px dashed var(--line);outline-offset:8px}
 .sprites{display:block;position:relative;aspect-ratio:28 / 31}
@@ -83,7 +83,7 @@ main{height:100%;display:grid;place-items:center}
     visibility 0s;
 }
 .chip{
-  /* ドット風の角：--p が「ドット1つぶん」の大きさ（枠線の太さも同じ） */
+  /* ドット風の角：--p が「ドット1つぶん」の大きさ(枠線の太さも同じ) */
   --p:4px;
   position:relative;isolation:isolate;
   display:inline-flex;align-items:center;justify-content:center;
@@ -106,10 +106,10 @@ main{height:100%;display:grid;place-items:center}
 .chip .plus{color:var(--line);margin-left:.35em}
 .chip.back{color:var(--line)}
 
-/* ボタンの横のひとこと（押せない） */
+/* ボタンの横のひとこと(押せない) */
 .pair{display:flex;flex-direction:column;align-items:center;gap:.4rem}
 .msg{
-  --p:2px;
+  --p:3px;
   position:relative;isolation:isolate;
   display:block;max-width:16em;padding:calc(.4rem + var(--p)) calc(.95rem + var(--p));
   background:var(--line);
@@ -167,9 +167,9 @@ footer{
 <footer>&copy; <span id="year"></span><span id="owner"></span></footer>
 
 <script>
-/* ============ ここを書き換えてね ============
+/* =============================================
    url         → そのままリンク
-   items       → 押すと中身が出てくる（ボタンの次にボタン）
+   items       → 押すと中身が出てくる(ボタンの次にボタン)
    msg         → ボタンの横に出るひとこと
    goto        → 別のモードに切り替える
 ============================================= */
@@ -190,6 +190,10 @@ const MODES = {
       { label: "見ちゃう?", items: [
           { label: "ツミキapp", url: "https://tsumiki.app/",         msg: "使ってくれたら喜びます" },
           { label: "ofuse",     url: "https://ofuse.me/superhiko14/", msg: "お手紙やご支援喜びます" },
+      ]},
+      { label: "雑記", items: [
+          { label: "Blog", url: "https://super-hiko14.me/blog/",         msg: "適当に殴り書きしてます" },
+          { label: "日記",     url: "https://super-hiko14.me/diary/", msg: "更新がよく途絶える1行日記です" },
       ]},
       { label: "VRChat ›", goto: "vrc" },
     ],
@@ -220,11 +224,17 @@ document.getElementById("year").textContent = new Date().getFullYear();
 document.getElementById("owner").textContent = " " + COPYRIGHT_NAME;
 
 /* ---------- DOM を作る ---------- */
-const isExternal = u => !u.startsWith("mailto:");
+// 同じタブで開くサイト（ここに書いたホストは _blank を付けない。それ以外の外部リンクは新しいタブで開く）
+const SAME_TAB_HOSTS = ["super-hiko14.me"];
+const opensInNewTab = u => {
+  if (u.startsWith("mailto:")) return false;
+  try { return !SAME_TAB_HOSTS.includes(new URL(u).hostname); }
+  catch (_) { return true; }
+};
 function linkChip(it){
   const a = document.createElement("a");
   a.className = "chip"; a.href = it.url; a.textContent = it.label;
-  if (isExternal(it.url)) { a.target = "_blank"; a.rel = "noopener noreferrer"; }
+  if (opensInNewTab(it.url)) { a.target = "_blank"; a.rel = "noopener noreferrer"; }
   return a;
 }
 function buttonChip(label, plus){
@@ -278,7 +288,7 @@ for (const [key, mode] of Object.entries(MODES)) {
   }
   allNodes.push(...b.root, ...[...b.groups.values()].flat(), ...(b.groupBack ? [b.groupBack] : []));
 
-  // 検索・読み上げ用（見えない）
+  // 検索・読み上げ用(見えない)
   const flat = (items) => items.forEach(it => {
     if (it.items) flat(it.items);
     else if (it.url) { const a = document.createElement("a"); a.href = it.url; a.textContent = it.label; a.tabIndex = -1; plain.appendChild(a); }
@@ -296,7 +306,7 @@ function visibleSet(){
   return state.group ? [...b.groups.get(state.group), b.groupBack] : b.root;
 }
 
-/* ---------- 絵のまわりの楕円に並べる（はみ出さないよう調整） ---------- */
+/* ---------- 絵のまわりの楕円に並べる(はみ出さないよう調整) ---------- */
 const WOBBLE = [1.0, 1.1, 0.98, 1.08, 1.04, 0.96];
 function place(set){
   const r = me.getBoundingClientRect();
@@ -351,7 +361,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") back(); });
 addEventListener("resize", () => place(visibleSet()));
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => place(visibleSet()));
 
-/* ---------- モードの切り替え（背景・絵・ボタンが全部かわる） ---------- */
+/* ---------- モードの切り替え(背景・絵・ボタンが全部かわる) ---------- */
 function applyTheme(key){
   const m = MODES[key], t = m.theme;
   rootEl.style.setProperty("--bg", t.bg);
@@ -360,8 +370,8 @@ function applyTheme(key){
   rootEl.style.setProperty("--paper", t.paper);
   rootEl.style.setProperty("--hover", t.hover);
   stage.classList.toggle("is-vrc", m.sprite === 1);
-  document.getElementById("s0").alt = m.sprite === 0 ? "黒髪のドット絵のキャラクター" : "";
-  document.getElementById("s1").alt = m.sprite === 1 ? "ピンクがかった髪のドット絵のキャラクター（VRChat）" : "";
+  document.getElementById("s0").alt = m.sprite === 0 ? "Super Hiko14" : "";
+  document.getElementById("s1").alt = m.sprite === 1 ? "Super Hiko14(VRChat)" : "";
 }
 function switchMode(key){
   if (busy || key === state.mode) return;

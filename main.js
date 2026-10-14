@@ -385,14 +385,14 @@ function initSiteNav() {
     },
     {
       title: 'About',
-      url: 'https://super-hiko14.com/about/',
+      url: 'https://sub.super-hiko14.com/about/',
     },
     { title: 'お問い合わせ',
-      url: 'https://super-hiko14.com/contact/'
+      url: 'https://sub.super-hiko14.com/contact/'
     },
     {
       title: '物置',
-      url: 'https://super-hiko14.com/monooki/',
+      url: 'https://sub.super-hiko14.com/monooki/',
     },
     {
       title: '高級ジェネ™',
@@ -410,10 +410,10 @@ function initSiteNav() {
     },
     {
       title: '法務',
-      url: 'https://super-hiko14.com/terms/',
+      url: 'https://sub.super-hiko14.com/terms/',
       submenu: [
-        { label: 'プライバシーポリシー', url: 'https://super-hiko14.com/privacypolicy/' },
-        { label: '利用規約', url: 'https://super-hiko14.com/terms/' },
+        { label: 'プライバシーポリシー', url: 'https://sub.super-hiko14.com/privacypolicy/' },
+        { label: '利用規約', url: 'https://sub.super-hiko14.com/terms/' },
       ]
     }
   ];
